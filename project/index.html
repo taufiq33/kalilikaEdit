@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css">
+
+    <title>KalilikaEdit</title>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 class="text-center">KalilikaEdit</h1>
+            <p class="text-muted text-center">a Helper to create formatted text message before send for Whatsapp and
+                Telegram</p>
+        </header>
+
+        <hr>
+
+        <nav>
+            <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+                <div class="btn-group mr-2" role="group" aria-label="First group">
+                    <button type="button" class="btn btn-light btn-outline-info"><b>Tebal</b></button>
+                    <button type="button" class="btn btn-light btn-outline-info"><i>Miring</i></button>
+                    <button type="button" class="btn btn-light btn-outline-info"><code>Mono</code></button>
+                </div>
+                <div class="btn-group mr-2" role="group" aria-label="Second group">
+                    <button type="button" class="btn btn-light btn-outline-info">Tombol Lain</button>
+                    <button type="button" class="btn btn-light btn-outline-info">Tombol Lain</button>
+                </div>
+                <div class="btn-group" role="group">
+                    <button id="btnGroupDrop1" type="button" class="btn btn-secondary dropdown-toggle"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Dropdown
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                        <a class="dropdown-item" href="#">Dropdown link</a>
+                        <a class="dropdown-item" href="#">Dropdown link</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <hr>
+
+        <main>
+            <div class="row">
+                <div class="col">
+                    <textarea class="texteditor" id="polos">Ketikkan pesan anda disini...</textarea>
+                </div>
+                <div class="col"><textarea class="texteditor" id="formatted"
+                        disabled="disabled">Hasil teks yang sudah diformat (preview)</textarea></div>
+            </div>
+        </main>
+        <hr>
+        <div class="d-flex flex-row-reverse bd-highlight">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-light btn-outline-success">Copy[wa]</button>
+                <button type="button" class="btn btn-light btn-outline-primary">Copy[telegram]</button>
+            </div>
+        </div>
+        <div class="row">
+            <form>
+                <div class="form-row" id="nomorWAParent">
+                    <div class="col-9">
+                        <input type="text" placeholder="Nomor WA penerima" class="form-control" class="form-control" id="nomorWA">
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-light btn-outline-success">Send</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <hr>
+        <footer>
+            <p class="text-center">Copyright &copy; Taufiq Hidayat</p>
+        </footer>
+    </div>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
