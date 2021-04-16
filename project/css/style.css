@@ -11,3 +11,12 @@ body{
 #nomorWAParent{
     margin-left: 10px;
 }
+
+#autoPreviewCheckboxParent{
+   margin-top: 10px;
+   margin-left: 10px;
+}
+
+#autoPreviewCheckboxParent > label {
+    cursor: pointer;
+}
