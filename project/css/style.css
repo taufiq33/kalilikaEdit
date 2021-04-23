@@ -8,6 +8,13 @@ body{
     box-sizing: border-box;
 }
 
+#formatted {
+    border: 1px solid black;
+    box-sizing: border-box;
+    padding: 1.5px;
+    overflow: scroll;
+}
+
 #nomorWAParent{
     margin-left: 10px;
 }
@@ -20,3 +27,36 @@ body{
 #autoPreviewCheckboxParent > label {
     cursor: pointer;
 }
+
+.not-allowed{
+    cursor: not-allowed;
+}
+
+#hiddenOutput{
+    position: absolute;
+    opacity: 100;
+    z-index: -99999;
+    margin-left: 20px;
+}
+
+code{
+    color: rgb(68, 100, 126);
+}
+
+code.newline{
+    display: block;
+}
+
+emoji-picker{
+    display: none;
+}
+
+#btnShowEmoji, #stickyNavButton{
+    margin-bottom: 10px;
+}
+
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%
+  }

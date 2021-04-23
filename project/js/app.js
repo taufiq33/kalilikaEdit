@@ -1,21 +1,163 @@
 const textareaPolos = document.querySelector("#polos");
 const tombolPreview = document.querySelector("#previewButton");
-const textareaFormatted = document.querySelector("#formatted");
+const resultFormatted = document.querySelector("#formatted");
 const previewCheckbox = document.querySelector("#autoPreviewCheckbox");
+const buttonTebal = document.querySelector("#buttonTebal");
+const buttonMiring = document.querySelector("#buttonMiring");
+const buttonMono = document.querySelector("#buttonMono");
+const buttonCopyTelegram = document.querySelector("#buttonCopyTelegram");
+const hiddenOutput = document.querySelector("#hiddenOutput");
+const btnShowEmoji = document.querySelector("#btnShowEmoji");
+const emojiPicker = document.querySelector('emoji-picker');
+const stickyNavButton = document.querySelector('#stickyNavButton');
+const navToolbar = document.querySelector('#nav-toolbar');
+const clearContent = document.querySelector("#clearContent");
+
+function insertTextAtCursor(el, text) {
+    let val = el.value, endIndex, range;
+    if (typeof el.selectionStart != "undefined" && typeof el.selectionEnd != "undefined") {
+        endIndex = el.selectionEnd;
+        el.value = val.slice(0, el.selectionStart) + text + val.slice(endIndex);
+        el.selectionStart = el.selectionEnd = endIndex + text.length;
+    } else if (typeof document.selection != "undefined" && typeof document.selection.createRange != "undefined") {
+        el.focus();
+        range = document.selection.createRange();
+        range.collapse(false);
+        range.text = text;
+        range.select();
+    }
+}
+
+function checkNewline(){
+    let text = window.getSelection().toString();
+    if (text.indexOf('\n') !== -1){ return true }
+    return false
+}
 
 
+emojiPicker.addEventListener('emoji-click', function(event){
+        let emoji = event.detail.unicode;
+        insertTextAtCursor(textareaPolos, emoji);
+        textareaPolos.focus();
+    });
 
 textareaPolos.focus();
-tombolPreview.addEventListener("click", function(){
-    textareaFormatted.value = textareaPolos.value;
+tombolPreview.addEventListener("click", function () {
+    resultFormatted.innerHTML = textareaPolos.value.replaceAll("\n", "<br>");
 })
 
-previewCheckbox.addEventListener("change", function(){
-    if (previewCheckbox.checked == true){
-        timer = setInterval(function(){
-            textareaFormatted.value = textareaPolos.value;
-        },3500);
+stickyNavButton.addEventListener("click", function(){
+    if (navToolbar.classList.contains("sticky-top")) {
+        navToolbar.classList.remove("sticky-top");
+        stickyNavButton.classList.replace("btn-info", "btn-outline-info");
+        stickyNavButton.innerText = "Sticky Nav [off]";
+    } else {
+        navToolbar.classList.add("sticky-top");
+        stickyNavButton.classList.replace("btn-outline-info", "btn-info");
+        stickyNavButton.innerText = "Sticky Nav [on]";
+    }
+});
+
+let counterClickEmoji = false; // trik aneh , soalnya pertama app diload, 1x klik gk muncul emoji , harus dua kali.
+btnShowEmoji.addEventListener("click", function(){
+    if(!counterClickEmoji) {btnShowEmoji.click(); counterClickEmoji = true;}
+    if (emojiPicker.style.display === "none") {
+        console.log("diklik pas gk ada.");
+        btnShowEmoji.innerText = "Hide Emoji box";
+        btnShowEmoji.classList.replace("btn-primary", 'btn-danger');
+        emojiPicker.style.display = "block";
+    } else {
+        console.log("diklik pas ada.");
+        btnShowEmoji.innerText = "Show Emoji box";
+        btnShowEmoji.classList.replace('btn-danger', "btn-primary");
+        emojiPicker.style.display = "none";
+    }
+});
+
+previewCheckbox.addEventListener("change", function () {
+    if (previewCheckbox.checked == true) {
+        resultFormatted.innerHTML = textareaPolos.value.replaceAll("\n", "<br>");
+        timer = setInterval(function () {
+            resultFormatted.innerHTML = textareaPolos.value.replaceAll("\n", "<br>");
+        }, 1000);
     } else {
         clearInterval(timer);
+        resultFormatted.innerHTML = "Klik tombol Preview untuk melihat hasil.";
     }
 })
+
+buttonTebal.addEventListener("click", function () {
+    let selection = window.getSelection().toString();
+    if (selection === '') {return alert("Seleksi teks yang akan dikenai format ini.")};
+    let selectionStart = textareaPolos.selectionStart;
+    let selectionEnd = textareaPolos.selectionEnd;
+    let startWord = textareaPolos.value.substr(0,selectionStart);
+    let endWord = textareaPolos.value.substr(selectionEnd);
+    let formatted = `<b>${selection.trim()}</b>`;
+    textareaPolos.value = startWord + formatted + endWord;
+})
+
+buttonMiring.addEventListener("click", function () {
+    let selection = window.getSelection().toString();
+    if (selection === '') {return alert("Seleksi teks yang akan dikenai format ini.")};
+    let selectionStart = textareaPolos.selectionStart;
+    let selectionEnd = textareaPolos.selectionEnd;
+    let startWord = textareaPolos.value.substr(0,selectionStart);
+    let endWord = textareaPolos.value.substr(selectionEnd);
+    let formatted = `<i>${selection.trim()}</i>`;
+    textareaPolos.value = startWord + formatted + endWord;
+})
+
+buttonMono.addEventListener("click", function () {
+    let selection = window.getSelection().toString();
+    if (selection === '') {return alert("Seleksi teks yang akan dikenai format ini.")};
+    let selectionStart = textareaPolos.selectionStart;
+    let selectionEnd = textareaPolos.selectionEnd;
+    let startWord = textareaPolos.value.substr(0,selectionStart);
+    let endWord = textareaPolos.value.substr(selectionEnd);
+    let formatted = ``;
+    if ( checkNewline() ){
+        formatted = `<span><code class='newline'>${selection.trim()}</code></span>`;
+    } else {
+        formatted = `<code>${selection.trim()}</code>`; 
+    }
+    
+    textareaPolos.value = startWord + formatted + endWord;
+})
+
+
+clearButton.addEventListener("click", function () {
+    hiddenOutput.value = '';
+    let selection = window.getSelection().toString();
+    if (selection === '') {
+        if(confirm("Yakin ingin menghapus semua formatting?")) {
+            textareaPolos.value = textareaPolos.value.replace(/(<([^>]+)>)/gi, "");
+        }
+    }
+    let formatted = selection.replace(/(<([^>]+)>)/gi, "");
+    textareaPolos.value = textareaPolos.value.replaceAll(selection, formatted);
+    
+})
+
+clearContent.addEventListener("click", function () {
+    if(confirm("Yakin ingin menghapus semua pesan yang anda tulis?")) {
+        textareaPolos.value = "Ketikkan pesan anda disini...";
+    }  
+})
+
+buttonCopyTelegram.addEventListener("click", function(){
+    let result = resultFormatted.innerHTML
+        .replaceAll("<b>", "**")
+        .replaceAll("</b>", "**")
+        .replaceAll("<i>", "__")
+        .replaceAll("</i>", "__")
+        .replaceAll('<span><code class="newline">', "```")
+        .replaceAll("</code></span>", "```")
+        .replaceAll("<code>", "`")
+        .replaceAll("</code>", "`")
+        .replaceAll("<br>", "\n");
+    hiddenOutput.value = result;
+    hiddenOutput.select();
+    hiddenOutput.setSelectionRange(0, 99999);
+    document.execCommand('copy');
+});

@@ -1,0 +1,10 @@
+catat index selection start
+catat index selection end
+
+ambil pesan pertama sblm selection = substr(0,start)
+ambil pesan terakhir sblm selection = substr(end)
+
+pesan = window.getSelection().toString()
+pesan = `**${pesan}**`
+
+textareapolos.value = pertama + pesan + terakhir
