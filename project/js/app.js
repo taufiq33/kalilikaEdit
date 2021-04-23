@@ -34,6 +34,39 @@ function checkNewline(){
     return false
 }
 
+function getSelectionText(){
+    let selection = window.getSelection().toString();
+    if (selection === '') {return alert("Seleksi teks yang akan dikenai format ini.")};
+    return selection;
+}
+
+function updateEditor(selection, format){
+    let selectionStart = textareaPolos.selectionStart;
+    let selectionEnd = textareaPolos.selectionEnd;
+    let startWord = textareaPolos.value.substr(0,selectionStart);
+    let endWord = textareaPolos.value.substr(selectionEnd);
+
+    let formatList = {
+        bold : {
+            openTag : "<b>",
+            closeTag : "</b>"
+        },
+        italic : {
+            openTag : "<i>",
+            closeTag : "</i>"
+        },
+        mono : {
+            openTag : "<code>",
+            closeTag : "</code>"
+        },
+        monoNewLine : {
+            openTag : "<span><code class='newline'>",
+            closeTag : "</code></span>"
+        },
+    }
+    let formatted = `${formatList[format].openTag}${selection.trim()}${formatList[format].closeTag}`;
+    return startWord + formatted + endWord;
+}
 
 emojiPicker.addEventListener('emoji-click', function(event){
         let emoji = event.detail.unicode;
@@ -41,7 +74,7 @@ emojiPicker.addEventListener('emoji-click', function(event){
         textareaPolos.focus();
     });
 
-textareaPolos.focus();
+
 tombolPreview.addEventListener("click", function () {
     resultFormatted.innerHTML = textareaPolos.value.replaceAll("\n", "<br>");
 })
@@ -62,12 +95,10 @@ let counterClickEmoji = false; // trik aneh , soalnya pertama app diload, 1x kli
 btnShowEmoji.addEventListener("click", function(){
     if(!counterClickEmoji) {btnShowEmoji.click(); counterClickEmoji = true;}
     if (emojiPicker.style.display === "none") {
-        console.log("diklik pas gk ada.");
         btnShowEmoji.innerText = "Hide Emoji box";
         btnShowEmoji.classList.replace("btn-primary", 'btn-danger');
         emojiPicker.style.display = "block";
     } else {
-        console.log("diklik pas ada.");
         btnShowEmoji.innerText = "Show Emoji box";
         btnShowEmoji.classList.replace('btn-danger', "btn-primary");
         emojiPicker.style.display = "none";
@@ -87,42 +118,22 @@ previewCheckbox.addEventListener("change", function () {
 })
 
 buttonTebal.addEventListener("click", function () {
-    let selection = window.getSelection().toString();
-    if (selection === '') {return alert("Seleksi teks yang akan dikenai format ini.")};
-    let selectionStart = textareaPolos.selectionStart;
-    let selectionEnd = textareaPolos.selectionEnd;
-    let startWord = textareaPolos.value.substr(0,selectionStart);
-    let endWord = textareaPolos.value.substr(selectionEnd);
-    let formatted = `<b>${selection.trim()}</b>`;
-    textareaPolos.value = startWord + formatted + endWord;
+    let selection = getSelectionText();
+    textareaPolos.value = updateEditor(selection, "bold");
 })
 
 buttonMiring.addEventListener("click", function () {
-    let selection = window.getSelection().toString();
-    if (selection === '') {return alert("Seleksi teks yang akan dikenai format ini.")};
-    let selectionStart = textareaPolos.selectionStart;
-    let selectionEnd = textareaPolos.selectionEnd;
-    let startWord = textareaPolos.value.substr(0,selectionStart);
-    let endWord = textareaPolos.value.substr(selectionEnd);
-    let formatted = `<i>${selection.trim()}</i>`;
-    textareaPolos.value = startWord + formatted + endWord;
+    let selection = getSelectionText();
+    textareaPolos.value = updateEditor(selection, "italic");
 })
 
 buttonMono.addEventListener("click", function () {
-    let selection = window.getSelection().toString();
-    if (selection === '') {return alert("Seleksi teks yang akan dikenai format ini.")};
-    let selectionStart = textareaPolos.selectionStart;
-    let selectionEnd = textareaPolos.selectionEnd;
-    let startWord = textareaPolos.value.substr(0,selectionStart);
-    let endWord = textareaPolos.value.substr(selectionEnd);
-    let formatted = ``;
+    let selection = getSelectionText();
     if ( checkNewline() ){
-        formatted = `<span><code class='newline'>${selection.trim()}</code></span>`;
+        textareaPolos.value = updateEditor(selection, "monoNewLine");
     } else {
-        formatted = `<code>${selection.trim()}</code>`; 
+        textareaPolos.value = updateEditor(selection, "mono");
     }
-    
-    textareaPolos.value = startWord + formatted + endWord;
 })
 
 
@@ -134,7 +145,7 @@ clearButton.addEventListener("click", function () {
             textareaPolos.value = textareaPolos.value.replace(/(<([^>]+)>)/gi, "");
         }
     }
-    let formatted = selection.replace(/(<([^>]+)>)/gi, "");
+    let formatted = selection.replace(/(<([^>]+)>)/gi, ""); // hapus semua markup html
     textareaPolos.value = textareaPolos.value.replaceAll(selection, formatted);
     
 })
