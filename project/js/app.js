@@ -6,6 +6,7 @@ const buttonTebal = document.querySelector("#buttonTebal");
 const buttonMiring = document.querySelector("#buttonMiring");
 const buttonMono = document.querySelector("#buttonMono");
 const buttonCopyTelegram = document.querySelector("#buttonCopyTelegram");
+const buttonCopyWhatsapp = document.querySelector("#buttonCopyWhatsapp");
 const hiddenOutput = document.querySelector("#hiddenOutput");
 const btnShowEmoji = document.querySelector("#btnShowEmoji");
 const emojiPicker = document.querySelector('emoji-picker');
@@ -26,6 +27,23 @@ function insertTextAtCursor(el, text) {
         range.text = text;
         range.select();
     }
+}
+
+function decodeEntities(encodedString) {
+    let translate_re = /&(nbsp|amp|quot|lt|gt);/g;
+    let translate = {
+        "nbsp":" ",
+        "amp" : "&",
+        "quot": "\"",
+        "lt"  : "<",
+        "gt"  : ">"
+    };
+    return encodedString.replace(translate_re, function(match, entity) {
+        return translate[entity];
+    }).replace(/&#(\d+);/gi, function(match, numStr) {
+        let num = parseInt(numStr, 10);
+        return String.fromCharCode(num);
+    });
 }
 
 function checkNewline(){
@@ -65,7 +83,34 @@ function updateEditor(selection, format){
         },
     }
     let formatted = `${formatList[format].openTag}${selection.trim()}${formatList[format].closeTag}`;
+    textareaPolos.focus();
     return startWord + formatted + endWord;
+}
+
+function updatePreview(){
+    resultFormatted.innerHTML = textareaPolos.value.replaceAll("\n", "<br>");
+}
+
+function copyToClipboard( type="telegram" ){
+    let result = decodeEntities(resultFormatted.innerHTML
+        .replaceAll("<b>", "**")
+        .replaceAll("</b>", "**")
+        .replaceAll("<i>", "__")
+        .replaceAll("</i>", "__")
+        .replaceAll('<span><code class="newline">', "```")
+        .replaceAll("</code></span>", "```")
+        .replaceAll("<code>", "`")
+        .replaceAll("</code>", "`")
+        .replaceAll("<br>", "\n"));
+    if (type === "whatsapp") { 
+        result = result
+        .replaceAll("**", "*")
+        .replaceAll("__", "_");
+    }
+    hiddenOutput.value = result;
+    hiddenOutput.select();
+    hiddenOutput.setSelectionRange(0, 99999);
+    document.execCommand('copy');
 }
 
 emojiPicker.addEventListener('emoji-click', function(event){
@@ -76,7 +121,7 @@ emojiPicker.addEventListener('emoji-click', function(event){
 
 
 tombolPreview.addEventListener("click", function () {
-    resultFormatted.innerHTML = textareaPolos.value.replaceAll("\n", "<br>");
+    updatePreview();
 })
 
 stickyNavButton.addEventListener("click", function(){
@@ -107,9 +152,9 @@ btnShowEmoji.addEventListener("click", function(){
 
 previewCheckbox.addEventListener("change", function () {
     if (previewCheckbox.checked == true) {
-        resultFormatted.innerHTML = textareaPolos.value.replaceAll("\n", "<br>");
+        updatePreview();
         timer = setInterval(function () {
-            resultFormatted.innerHTML = textareaPolos.value.replaceAll("\n", "<br>");
+            updatePreview();
         }, 1000);
     } else {
         clearInterval(timer);
@@ -157,18 +202,9 @@ clearContent.addEventListener("click", function () {
 })
 
 buttonCopyTelegram.addEventListener("click", function(){
-    let result = resultFormatted.innerHTML
-        .replaceAll("<b>", "**")
-        .replaceAll("</b>", "**")
-        .replaceAll("<i>", "__")
-        .replaceAll("</i>", "__")
-        .replaceAll('<span><code class="newline">', "```")
-        .replaceAll("</code></span>", "```")
-        .replaceAll("<code>", "`")
-        .replaceAll("</code>", "`")
-        .replaceAll("<br>", "\n");
-    hiddenOutput.value = result;
-    hiddenOutput.select();
-    hiddenOutput.setSelectionRange(0, 99999);
-    document.execCommand('copy');
+    copyToClipboard("telegram");
+});
+
+buttonCopyWhatsapp.addEventListener("click", function(){
+    copyToClipboard("whatsapp");
 });
