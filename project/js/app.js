@@ -15,11 +15,14 @@ const navToolbar = document.querySelector('#nav-toolbar');
 const clearContent = document.querySelector("#clearContent");
 const buttonDropdown = document.querySelector("#btnGroupDrop1");
 const buttonSourceData = document.querySelector("#buttonSourceData");
+const saveSourceData = document.querySelector("#saveSourceData");
 const sourceDataContainer = document.querySelector("#source-data-container");
 const sourceDataItemsContainer = document.querySelector("#source-data-items-container");
 const addSourceData = document.querySelector("#addSourceData");
 const btnHideSourceData = document.querySelector("#btnHideSourceData");
 let btnCloseSourceDataItem = document.querySelectorAll(".btn-close");
+
+const sourceData = {data : []};
 
 function insertTextAtCursor(el, text) {
     let val = el.value, endIndex, range;
@@ -148,18 +151,45 @@ buttonSourceData.addEventListener("click", function(){
 
 addSourceData.addEventListener('click', function(){
     sourceDataItemsContainer.innerHTML += `
-        <div class="col">
-            <div class="card">
-                <div class="card-header">
-                    <input placeholder="item title" type="text"> <button class="btn btn-danger btn-close" onclick="deleteElement(this)">X</button>
-                </div>
-                <div class="card-body">
-                    <textarea cols="30" rows="10"></textarea>
-                </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <input class="itemTitle form-control" placeholder="item title" type="text"> 
             </div>
+            <div class="card-body">
+                <textarea class="form-control itemBody" cols="30" rows="10"></textarea>
+            <button class="btn btn-danger btn-close" onclick="deleteElement(this)">delete</button>
+            </div>
+            
         </div>
+    </div>
     `;
     btnCloseSourceDataItem = document.querySelectorAll(".btn-close");
+});
+
+saveSourceData.addEventListener('click', function(){
+    let title = [];
+    let body = [];
+
+    document.querySelectorAll(".itemTitle").forEach(function(element){
+        title.push(element.value);
+        sourceData.data.push({
+            "title" : element.value,
+            "body" : []
+        })
+    })
+
+    document.querySelectorAll(".itemBody").forEach(function(element){
+        body.push(element.value);
+    })
+
+    sourceData.data.map(function(value, index){
+        value.body.push(body[index]);
+    });
+
+    console.log(title);
+    console.log(body);
+    console.log(sourceData);
 });
 
 btnHideSourceData.addEventListener("click", function(){
@@ -176,7 +206,7 @@ emojiPicker.addEventListener('emoji-click', function(event){
         let emoji = event.detail.unicode;
         insertTextAtCursor(textareaPolos, emoji);
         textareaPolos.focus();
-    });
+});
 
 
 tombolPreview.addEventListener("click", function () {
