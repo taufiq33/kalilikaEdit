@@ -14,6 +14,12 @@ const stickyNavButton = document.querySelector('#stickyNavButton');
 const navToolbar = document.querySelector('#nav-toolbar');
 const clearContent = document.querySelector("#clearContent");
 const buttonDropdown = document.querySelector("#btnGroupDrop1");
+const buttonSourceData = document.querySelector("#buttonSourceData");
+const sourceDataContainer = document.querySelector("#source-data-container");
+const sourceDataItemsContainer = document.querySelector("#source-data-items-container");
+const addSourceData = document.querySelector("#addSourceData");
+const btnHideSourceData = document.querySelector("#btnHideSourceData");
+let btnCloseSourceDataItem = document.querySelectorAll(".btn-close");
 
 function insertTextAtCursor(el, text) {
     let val = el.value, endIndex, range;
@@ -133,6 +139,38 @@ function copyToClipboard( type="telegram" ){
 buttonDropdown.addEventListener('click', function(){
     toggle(buttonDropdown.nextElementSibling);
 });
+
+buttonSourceData.addEventListener("click", function(){
+    toggle(sourceDataContainer, function(){
+        toggle(buttonDropdown.nextElementSibling);
+    });
+});
+
+addSourceData.addEventListener('click', function(){
+    sourceDataItemsContainer.innerHTML += `
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <input placeholder="item title" type="text"> <button class="btn btn-danger btn-close" onclick="deleteElement(this)">X</button>
+                </div>
+                <div class="card-body">
+                    <textarea cols="30" rows="10"></textarea>
+                </div>
+            </div>
+        </div>
+    `;
+    btnCloseSourceDataItem = document.querySelectorAll(".btn-close");
+});
+
+btnHideSourceData.addEventListener("click", function(){
+    toggle(sourceDataContainer);
+});
+
+function deleteElement(element){
+    console.log("diklik");
+    el = element.parentElement.parentElement.parentElement;
+    el.remove();
+}
 
 emojiPicker.addEventListener('emoji-click', function(event){
         let emoji = event.detail.unicode;
