@@ -34,9 +34,8 @@ body{
 
 #hiddenOutput{
     position: absolute;
-    opacity: 100;
-    z-index: -99999;
-    margin-left: 20px;
+    left: -1000px;
+    top: -1000px;
 }
 
 code{
@@ -60,3 +59,11 @@ emoji-picker{
     top: 0;
     width: 100%
   }
+
+.show{
+    display: block;
+}
+
+.hide{
+    display: none;
+}

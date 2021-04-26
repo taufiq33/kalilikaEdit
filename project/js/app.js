@@ -6,13 +6,14 @@ const buttonTebal = document.querySelector("#buttonTebal");
 const buttonMiring = document.querySelector("#buttonMiring");
 const buttonMono = document.querySelector("#buttonMono");
 const buttonCopyTelegram = document.querySelector("#buttonCopyTelegram");
-const buttonCopyWhatsapp = document.querySelector("#buttonCopyWhatsapp");
+// const buttonCopyWhatsapp = document.querySelector("#buttonCopyWhatsapp");
 const hiddenOutput = document.querySelector("#hiddenOutput");
 const btnShowEmoji = document.querySelector("#btnShowEmoji");
 const emojiPicker = document.querySelector('emoji-picker');
 const stickyNavButton = document.querySelector('#stickyNavButton');
 const navToolbar = document.querySelector('#nav-toolbar');
 const clearContent = document.querySelector("#clearContent");
+const buttonDropdown = document.querySelector("#btnGroupDrop1");
 
 function insertTextAtCursor(el, text) {
     let val = el.value, endIndex, range;
@@ -44,6 +45,19 @@ function decodeEntities(encodedString) {
         let num = parseInt(numStr, 10);
         return String.fromCharCode(num);
     });
+}
+
+function toggle(element, callbackFunctionShow = false, callbackFunctionHide = false){
+    if (element.classList.contains("show")){
+        element.classList.replace("show", "hide");
+        if (callbackFunctionHide) { callbackFunctionHide(); }
+    } else if (element.classList.contains("hide")){
+        element.classList.replace("hide", "show");
+        if (callbackFunctionShow) { callbackFunctionShow(); }
+    } else {
+        element.classList.add("show");
+        if (callbackFunctionShow) { callbackFunctionShow(); }
+    }
 }
 
 function checkNewline(){
@@ -116,6 +130,10 @@ function copyToClipboard( type="telegram" ){
     document.execCommand('copy');
 }
 
+buttonDropdown.addEventListener('click', function(){
+    toggle(buttonDropdown.nextElementSibling);
+});
+
 emojiPicker.addEventListener('emoji-click', function(event){
         let emoji = event.detail.unicode;
         insertTextAtCursor(textareaPolos, emoji);
@@ -141,16 +159,16 @@ stickyNavButton.addEventListener("click", function(){
 
 let counterClickEmoji = false; // trik aneh , soalnya pertama app diload, 1x klik gk muncul emoji , harus dua kali.
 btnShowEmoji.addEventListener("click", function(){
-    if(!counterClickEmoji) {btnShowEmoji.click(); counterClickEmoji = true;}
-    if (emojiPicker.style.display === "none") {
-        btnShowEmoji.innerText = "Hide Emoji box";
-        btnShowEmoji.classList.replace("btn-primary", 'btn-danger');
-        emojiPicker.style.display = "block";
-    } else {
-        btnShowEmoji.innerText = "Show Emoji box";
-        btnShowEmoji.classList.replace('btn-danger', "btn-primary");
-        emojiPicker.style.display = "none";
-    }
+    //https://stackoverflow.com/questions/779379/why-is-settimeoutfn-0-sometimes-useful
+    setTimeout(function(){
+        toggle(emojiPicker, function(){
+            btnShowEmoji.innerText = "Hide Emoji box";
+            btnShowEmoji.classList.replace("btn-primary", 'btn-danger');
+        }, function(){
+            btnShowEmoji.innerText = "Show Emoji box";
+            btnShowEmoji.classList.replace('btn-danger', "btn-primary");
+        });
+    }) 
 });
 
 previewCheckbox.addEventListener("change", function () {
@@ -208,6 +226,6 @@ buttonCopyTelegram.addEventListener("click", function(){
     copyToClipboard("telegram");
 });
 
-buttonCopyWhatsapp.addEventListener("click", function(){
-    copyToClipboard("whatsapp");
-});
+// buttonCopyWhatsapp.addEventListener("click", function(){
+//     copyToClipboard("whatsapp");
+// });
