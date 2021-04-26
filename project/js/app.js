@@ -53,9 +53,12 @@ function checkNewline(){
 }
 
 function getSelectionText(){
-    let selection = window.getSelection().toString();
-    if (selection === '') {return alert("Seleksi teks yang akan dikenai format ini.")};
-    return selection;
+    if (textareaPolos.selectionStart == textareaPolos.selectionEnd) {
+        return alert("Seleksi teks yang akan dikenai format ini.")
+    }
+    
+    let selected = textareaPolos.value.slice(textareaPolos.selectionStart, textareaPolos.selectionEnd);
+    return selected;
 }
 
 function updateEditor(selection, format){
