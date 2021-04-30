@@ -48,8 +48,8 @@
                         Source Data
                     </button>
                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                        <button id="buttonSourceData" class="dropdown-item" href="#">Add Source Data</button>
-                        <a class="dropdown-item" href="#">Dropdown link</a>
+                        <button id="buttonSourceData" class="dropdown-item" href="#">View/Add Source Data</button>
+                        <button id="buttonUseSourceData" class="dropdown-item" href="#">Use Source Data</button>
                     </div>
                 </div>
             </div>
@@ -75,10 +75,10 @@
                 <div class="col">
                     <div class="card">
                         <div class="card-header">
-                            <input class="itemTitle form-control" placeholder="item title" type="text"> 
+                            <input onfocusout="entryKeyData(this)" tabindex="1" class="itemTitle form-control" placeholder="item title" type="text"> 
                         </div>
                         <div class="card-body">
-                            <textarea class="form-control itemBody" cols="30" rows="10"></textarea>
+                            <textarea tabindex="2" class="form-control itemBody" cols="30" rows="10"></textarea>
                         <button class="btn btn-danger btn-close" onclick="deleteElement(this)">delete</button>
                         </div>
                         
@@ -87,10 +87,10 @@
                 <div class="col">
                     <div class="card">
                         <div class="card-header">
-                            <input class="itemTitle form-control" placeholder="item title" type="text"> 
+                            <input onfocusout="entryKeyData(this)" tabindex="1" class="itemTitle form-control" placeholder="item title" type="text"> 
                         </div>
                         <div class="card-body">
-                            <textarea class="form-control itemBody" cols="30" rows="10"></textarea>
+                            <textarea tabindex="2" class="form-control itemBody" cols="30" rows="10"></textarea>
                         <button class="btn btn-danger btn-close" onclick="deleteElement(this)">delete</button>
                         </div>
                         
@@ -99,10 +99,10 @@
                 <div class="col">
                     <div class="card">
                         <div class="card-header">
-                            <input class="itemTitle form-control" placeholder="item title" type="text"> 
+                            <input onfocusout="entryKeyData(this)" tabindex="1" class="itemTitle form-control" placeholder="item title" type="text"> 
                         </div>
                         <div class="card-body">
-                            <textarea class="form-control itemBody" cols="30" rows="10"></textarea>
+                            <textarea tabindex="2" class="form-control itemBody" cols="30" rows="10"></textarea>
                         <button class="btn btn-danger btn-close" onclick="deleteElement(this)">delete</button>
                         </div>
                         

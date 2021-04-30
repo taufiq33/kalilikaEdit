@@ -19,10 +19,11 @@ const saveSourceData = document.querySelector("#saveSourceData");
 const sourceDataContainer = document.querySelector("#source-data-container");
 const sourceDataItemsContainer = document.querySelector("#source-data-items-container");
 const addSourceData = document.querySelector("#addSourceData");
+const buttonUseSourceData = document.querySelector("#buttonUseSourceData");
 const btnHideSourceData = document.querySelector("#btnHideSourceData");
 let btnCloseSourceDataItem = document.querySelectorAll(".btn-close");
 
-const sourceData = {data : []};
+const sourceData = {data : {}};
 
 function insertTextAtCursor(el, text) {
     let val = el.value, endIndex, range;
@@ -67,6 +68,34 @@ function toggle(element, callbackFunctionShow = false, callbackFunctionHide = fa
         element.classList.add("show");
         if (callbackFunctionShow) { callbackFunctionShow(); }
     }
+}
+
+
+function checkEntrySourceData(param){
+    let returnKosong = true;
+    let returnIsiSemua = true;
+    
+    document.querySelectorAll(".itemTitle").forEach(function(element){
+        if(element.value === ""){
+            returnIsiSemua = false;
+        }
+        if(element.value !== ""){
+            returnKosong = false;
+        }
+    });
+
+    if(returnKosong || returnIsiSemua) {
+        document.querySelectorAll(".itemBody").forEach(function(element){
+            if(element.value === ""){
+                returnIsiSemua = false;
+            }
+            if(element.value !== ""){
+                returnKosong = false;
+            }
+        });
+    }
+
+    return param == 'kosong' ? returnKosong : returnIsiSemua;
 }
 
 function checkNewline(){
@@ -136,11 +165,26 @@ function copyToClipboard( type="telegram" ){
     hiddenOutput.value = result;
     hiddenOutput.select();
     hiddenOutput.setSelectionRange(0, 99999);
-    document.execCommand('copy');
+    if (document.execCommand('copy')) {
+        buttonCopyTelegram.innerText = "Ok sdh dicopy gan!";
+    }
+    setTimeout(function(){
+        buttonCopyTelegram.innerText = "Copy[telegram]";
+    },1500);
 }
 
 buttonDropdown.addEventListener('click', function(){
     toggle(buttonDropdown.nextElementSibling);
+});
+
+buttonUseSourceData.addEventListener('click', function(){
+    if (Object.keys(sourceData.data).length === 0 || Object.keys(sourceData.data) === "" ) { 
+        alert("Source data is empty");
+    } else {
+        insertTextAtCursor(textareaPolos, sourceData.data.toString());
+        textareaPolos.focus();
+    }
+    return toggle(buttonDropdown.nextElementSibling);
 });
 
 buttonSourceData.addEventListener("click", function(){
@@ -150,14 +194,17 @@ buttonSourceData.addEventListener("click", function(){
 });
 
 addSourceData.addEventListener('click', function(){
-    sourceDataItemsContainer.innerHTML += `
+    if (!checkEntrySourceData("kosong")) {
+        return alert("Mohon kosongkan dulu semua isian pada source data.");
+    }
+    document.querySelector("#source-data-items-container").innerHTML += `
     <div class="col">
         <div class="card">
             <div class="card-header">
-                <input class="itemTitle form-control" placeholder="item title" type="text"> 
+                <input onfocusout="entryKeyData(this)" tabindex="1" class="itemTitle form-control" placeholder="item title" type="text"> 
             </div>
             <div class="card-body">
-                <textarea class="form-control itemBody" cols="30" rows="10"></textarea>
+                <textarea tabindex="2" class="form-control itemBody" cols="30" rows="10"></textarea>
             <button class="btn btn-danger btn-close" onclick="deleteElement(this)">delete</button>
             </div>
             
@@ -168,24 +215,30 @@ addSourceData.addEventListener('click', function(){
 });
 
 saveSourceData.addEventListener('click', function(){
+    if(!checkEntrySourceData("isiSemua")) {return alert("Please complete all entry for source Data")}
+    saveSourceData.data = "";
     let title = [];
     let body = [];
 
     document.querySelectorAll(".itemTitle").forEach(function(element){
         title.push(element.value);
-        sourceData.data.push({
-            "title" : element.value,
+        sourceData.data[element.value] = {
             "body" : []
-        })
+        };
     })
 
     document.querySelectorAll(".itemBody").forEach(function(element){
-        body.push(element.value);
+        body.push(element.value.trim().replace(/\n/g, "|").split("|"));
     })
 
-    sourceData.data.map(function(value, index){
-        value.body.push(body[index]);
-    });
+    let o = 0;
+    for (item in sourceData.data) {
+        sourceData.data[item].body.push(body[o]);
+        o++;
+    }
+
+    window.alert("Ok tersimpan");
+    btnHideSourceData.click();
 
     console.log(title);
     console.log(body);
@@ -198,8 +251,18 @@ btnHideSourceData.addEventListener("click", function(){
 
 function deleteElement(element){
     console.log("diklik");
+    if (sourceData.data[element.getAttribute("data-source-key")]){
+        delete sourceData.data[element.getAttribute("data-source-key")];
+    }
     el = element.parentElement.parentElement.parentElement;
     el.remove();
+}
+
+function entryKeyData(element){
+    if (element.value === '') {return}
+    el = element.parentElement.parentElement
+        .querySelector('button').setAttribute("data-source-key", element.value);
+    console.log(element.parentElement.parentElement.querySelector('button'));
 }
 
 emojiPicker.addEventListener('emoji-click', function(event){
