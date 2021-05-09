@@ -23,7 +23,11 @@ const buttonUseSourceData = document.querySelector("#buttonUseSourceData");
 const btnHideSourceData = document.querySelector("#btnHideSourceData");
 let btnCloseSourceDataItem = document.querySelectorAll(".btn-close");
 
-const sourceData = {data : {}};
+let sourceData = {data : {}};
+let sourceDataTemplate = [];
+let literalReplaceList = [];
+let title = [];
+let body = [];
 
 function insertTextAtCursor(el, text) {
     let val = el.value, endIndex, range;
@@ -144,6 +148,21 @@ function updateEditor(selection, format){
 
 function updatePreview(){
     resultFormatted.innerHTML = textareaPolos.value.replaceAll("\n", "<br>");
+    
+    if(resultFormatted.querySelector("sourcedata")){
+        literal = `${resultFormatted.querySelector("sourcedata").innerHTML}`
+
+        konten = "";
+        sourceDataTemplate.forEach(function(item, index){
+            let x = literal;
+            for(let i = 0; i < title.length; i++){
+                x = x.replace(literalReplaceList[i], item[title[i]]);
+            }
+            konten += x;
+        })
+
+        resultFormatted.querySelector("sourcedata").innerHTML = konten;
+    }
 }
 
 function copyToClipboard( type="telegram" ){
@@ -156,20 +175,32 @@ function copyToClipboard( type="telegram" ){
         .replaceAll("</code></span>", "```")
         .replaceAll("<code>", "`")
         .replaceAll("</code>", "`")
-        .replaceAll("<br>", "\n"));
+        .replaceAll("<br>", "\n"))
+        .replaceAll("<sourcedata>", "")
+        .replaceAll("</sourcedata>", "");
     if (type === "whatsapp") { 
         result = result
         .replaceAll("**", "*")
-        .replaceAll("__", "_");
+        .replaceAll("__", "_")
+        .replaceAll("`", "```");
     }
     hiddenOutput.value = result;
     hiddenOutput.select();
     hiddenOutput.setSelectionRange(0, 99999);
     if (document.execCommand('copy')) {
-        buttonCopyTelegram.innerText = "Ok sdh dicopy gan!";
+        if(type === "telegram"){
+            buttonCopyTelegram.innerText = "Ok sdh dicopy gan!";
+        }else{
+            buttonCopyWhatsapp.innerText = "Ok sdh dicopy gan!";
+        }
     }
     setTimeout(function(){
-        buttonCopyTelegram.innerText = "Copy[telegram]";
+        if(type === "telegram"){
+            buttonCopyTelegram.innerText = "Copy[telegram]";
+        } else {
+            buttonCopyWhatsapp.innerText = "Copy[wa]";
+        }
+        
     },1500);
 }
 
@@ -181,7 +212,12 @@ buttonUseSourceData.addEventListener('click', function(){
     if (Object.keys(sourceData.data).length === 0 || Object.keys(sourceData.data) === "" ) { 
         alert("Source data is empty");
     } else {
-        insertTextAtCursor(textareaPolos, sourceData.data.toString());
+        let key = '';
+        for( k in sourceData.data){
+            key += ` \${${k}} `
+        }
+        let strTemplate = `<sourcedata>\n${key}\n</sourcedata>`;
+        insertTextAtCursor(textareaPolos, strTemplate);
         textareaPolos.focus();
     }
     return toggle(buttonDropdown.nextElementSibling);
@@ -216,12 +252,15 @@ addSourceData.addEventListener('click', function(){
 
 saveSourceData.addEventListener('click', function(){
     if(!checkEntrySourceData("isiSemua")) {return alert("Please complete all entry for source Data")}
-    saveSourceData.data = "";
-    let title = [];
-    let body = [];
+    sourceData = {data : {}};
+    sourceDataTemplate = [];
+    literalReplaceList = [];
+    title = [];
+    body = [];
 
     document.querySelectorAll(".itemTitle").forEach(function(element){
         title.push(element.value);
+        literalReplaceList.push("${" + element.value + "}");
         sourceData.data[element.value] = {
             "body" : []
         };
@@ -237,12 +276,30 @@ saveSourceData.addEventListener('click', function(){
         o++;
     }
 
+    let dataCount = 0;
+    let pembatas = body[0].length;
+    console.log(pembatas);
+    while(true){
+        // if(sourceData.data[item].body[0][dataCount] === undefined){
+        //     break;
+        // }
+        if (dataCount > pembatas-1) {break;}
+        let obj = {};
+        title.forEach(function(value,index){
+            obj[value] = sourceData.data[value].body[0][dataCount];
+        })
+        sourceDataTemplate.push(obj);
+        dataCount++;
+    }
+
     window.alert("Ok tersimpan");
     btnHideSourceData.click();
+    updatePreview();
 
-    console.log(title);
-    console.log(body);
-    console.log(sourceData);
+    console.log("title", title);
+    console.log("body", body);
+    console.log("sourceData", sourceData);
+    console.log("sourceDataTemplate", sourceDataTemplate);
 });
 
 btnHideSourceData.addEventListener("click", function(){
@@ -256,6 +313,12 @@ function deleteElement(element){
     }
     el = element.parentElement.parentElement.parentElement;
     el.remove();
+}
+
+function reloadEvent(){
+    if(window.confirm("Semua data akan hilang, anda harus mengetik ulang lagi dari awal . ok?")){
+        window.location.reload();
+    }
 }
 
 function entryKeyData(element){
